@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Load Off - Contractor App Mockup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            lightBlue: '#68c0ec',
+                            darkBlue: '#2554ab',
+                            lightOrange: '#fbad1c',
+                            darkOrange: '#f47d20',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Mobile app container simulation */
+        body { background-color: #f3f4f6; display: flex; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        .app-container { width: 100%; max-width: 414px; background-color: #ffffff; min-height: 100vh; position: relative; overflow-x: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        .content-area { flex: 1; overflow-y: auto; padding-bottom: 90px; } /* Space for bottom nav */
+        .view-section { display: none; padding: 16px; animation: fadeIn 0.3s ease-in-out; }
+        .view-section.active { display: block; }
+        
+        /* Modal Popups */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; width: 90%; max-width: 380px; border-radius: 16px; overflow: hidden; animation: slideUp 0.3s ease-out; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Top Header -->
+    <header class="bg-white border-b border-gray-100 p-4 sticky top-0 z-40 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-2">
+            <!-- Logo Area: Uses CSS logic to simulate the Horizontal Vector or displays img if present -->
+            <div class="flex items-center text-brand-darkBlue font-black text-xl tracking-tighter">
+                <!-- Placeholder for Horizontal Vector PDF/SVG -->
+                <span class="text-3xl mr-1">Load</span>
+                <span class="text-3xl text-brand-lightBlue">off</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+             <!-- Active Role Indicator / Switcher -->
+            <div class="relative">
+                <select id="roleSelector" onchange="switchRole(this.value)" class="appearance-none bg-brand-darkBlue text-white text-xs font-bold py-2 pl-3 pr-8 rounded-full focus:outline-none shadow-md">
+                    <option value="dropper">Dropper Mode</option>
+                    <option value="loader">Loader Mode</option>
+                    <option value="fullservice">Full-Service</option>
+                </select>
+                <i data-lucide="chevron-down" class="w-3 h-3 text-white absolute right-2.5 top-2.5 pointer-events-none"></i>
+            </div>
+            
+            <!-- Offie Mascot Profile Icon -->
+            <div class="w-10 h-10 rounded-full bg-brand-lightBlue border-2 border-brand-darkOrange overflow-hidden shadow-sm relative">
+                <!-- User to place 2315.jpg in same folder -->
+                <img src="2315.jpg" alt="Offie" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/40/68c0ec/ffffff?text=Offie'"> 
+            </div>
+        </div>
+    </header>
+
+    <div class="content-area">
+        <!-- ==================== DROPPER VIEW (Dashboard) ==================== -->
+        <div id="dropper" class="view-section active">
+            <!-- Status Bar -->
+            <div class="flex justify-between items-center mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <div>
+                    <h2 class="font-bold text-gray-800">Dropper Status</h2>
+                    <p class="text-xs text-green-600 font-bold flex items-center mt-1 uppercase tracking-wide">
+                        <span class="relative flex h-2 w-2 mr-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        Online
+                    </p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs text-gray-500 font-semibold">Current Load</p>
+                    <p class="font-bold text-lg text-brand-darkBlue">2 <span class="text-sm text-gray-400 font-normal">/ 3 Orders</span></p>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-gray-700 mb-3 flex items-center"><i data-lucide="list" class="w-4 h-4 mr-2"></i> Active Tasks</h3>
+
+            <!-- Task 1 -->
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-4 border-l-4 border-l-brand-lightOrange relative overflow-hidden">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="bg-orange-50 text-brand-darkOrange text-xs font-bold px-2 py-1 rounded border border-orange-100">PICKUP</span>
+                    <span class="font-bold text-gray-800">$12.00</span>
+                </div>
+                <p class="font-bold text-gray-800 text-sm mb-1">Customer: Sarah J.</p>
+                <p class="text-gray-500 text-xs mb-3">Emergency Kit Pickup • 3 Bags</p>
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="window.open('https://maps.google.com', '_blank')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-lg text-xs flex justify-center items-center transition">
+                        <i data-lucide="map" class="w-3 h-3 mr-1"></i> Open Maps
+                    </button>
+                    <button class="bg-brand-darkBlue text-white font-semibold py-2 rounded-lg text-xs transition">
+                        Confirm Pickup
+                    </button>
+                </div>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-4 border-l-4 border-l-purple-500">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="bg-purple-50 text-purple-700 text-xs font-bold px-2 py-1 rounded border border-purple-100">HUB DROP-OFF</span>
+                    <span class="font-bold text-gray-800">$14.50</span>
+                </div>
+                <p class="font-bold text-gray-800 text-sm mb-1">Dest: Main St. Laundromat</p>
+                
+                <!-- Scale Input -->
+                <div class="bg-gray-50 p-3 rounded-lg my-3 border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-xs font-bold text-gray-600">Scale Weight</label>
+                        <i data-lucide="scale" class="w-3 h-3 text-gray-400"></i>
+                    </div>
+                    <input type="number" placeholder="0.0 lbs" class="w-full p-2 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:border-brand-lightBlue mb-2">
+                    <button class="w-full bg-white border border-gray-300 text-gray-600 font-medium py-2 rounded text-xs flex justify-center items-center hover:bg-gray-50">
+                        <i data-lucide="camera" class="w-3 h-3 mr-2"></i> Photo on Shelf
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="window.open('https://maps.google.com', '_blank')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2 rounded-lg text-xs flex justify-center items-center transition">
+                        <i data-lucide="map" class="w-3 h-3 mr-1"></i> Navigation
+                    </button>
+                    <button class="bg-purple-600 text-white font-semibold py-2 rounded-lg text-xs transition shadow-md">
+                        Complete Drop
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Simulation Trigger -->
+            <button onclick="triggerIncomingOrder()" class="fixed bottom-24 right-4 bg-brand-darkOrange text-white p-3 rounded-full shadow-lg hover:bg-orange-600 z-50 flex items-center text-xs font-bold">
+                <i data-lucide="zap" class="w-4 h-4 mr-1"></i> Demo Pop-up
+            </button>
+        </div>
+
+        <!-- ==================== LOADER VIEW (Dashboard) ==================== -->
+        <div id="loader" class="view-section">
+            <div class="bg-gradient-to-br from-brand-darkBlue to-blue-900 text-white rounded-xl p-5 shadow-lg mb-6 relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="font-bold text-lg">Shift Active</h2>
+                            <p class="text-brand-lightBlue text-xs font-bold uppercase tracking-wider">Main St. Laundromat</p>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm p-2 rounded-lg text-center">
+                            <p class="text-[10px] text-gray-300 uppercase">Min Rate</p>
+                            <p class="font-bold text-lg">$20<span class="text-xs font-normal">/hr</span></p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-white/10 flex space-x-4 text-xs">
+                         <span><i data-lucide="clock" class="w-3 h-3 inline mr-1"></i> Ends: 2:00 PM</span>
+                         <span><i data-lucide="shirt" class="w-3 h-3 inline mr-1"></i> Processed: 14 lbs</span>
+                    </div>
+                </div>
+                <!-- Decorative Icon -->
+                <i data-lucide="washing-machine" class="w-32 h-32 absolute -right-6 -bottom-8 text-white opacity-5"></i>
+            </div>
+
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-gray-700">Queue</h3>
+                <span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-full">Background Check: Verified <i data-lucide="check-circle" class="w-3 h-3 inline text-green-600 ml-1"></i></span>
+            </div>
+
+            <!-- Loader Task -->
+            <div class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <!-- Header with Instructions -->
+                <div class="bg-gray-50 p-3 border-b border-gray-100 flex justify-between items-center">
+                    <span class="font-bold text-gray-700 text-sm">Order #8492</span>
+                    <span class="text-xs text-brand-darkOrange font-bold bg-orange-50 px-2 py-1 rounded border border-orange-100">Standard Wash</span>
+                </div>
+                
+                <!-- Dropper Photo (Reference) -->
+                <div class="relative h-32 bg-gray-800">
+                    <img src="https://via.placeholder.com/400x200/cccccc/666666?text=Dropper+Drop-off+Photo" class="w-full h-full object-cover opacity-75">
+                    <div class="absolute bottom-2 left-2 text-white text-xs font-bold drop-shadow-md">
+                        Location: Shelf B-2
+                    </div>
+                </div>
+
+                <div class="p-4">
+                    <div class="mb-4">
+                        <p class="text-xs font-bold text-gray-500 uppercase mb-1">Preferences</p>
+                        <p class="text-sm text-gray-800 bg-blue-50 p-2 rounded border border-blue-100">
+                            "Cold wash only. Hang dry collared shirts."
+                        </p>
+                    </div>
+
+                    <button class="w-full bg-brand-lightBlue hover:bg-blue-400 text-white font-bold py-3 rounded-lg text-sm transition shadow-md flex justify-center items-center">
+                        <i data-lucide="camera" class="w-4 h-4 mr-2"></i> Log Completion & Photo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== FULL-SERVICE VIEW (Dashboard) ==================== -->
+        <div id="fullservice" class="view-section">
+            
+            <!-- Header -->
+            <div class="mb-5">
+                <h2 class="font-bold text-xl text-gray-800">Full Service Market</h2>
+                <p class="text-xs text-gray-500">Select offers to manage end-to-end.</p>
+            </div>
+
+            <!-- Hub Pass Upsell -->
+            <div class="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-4 rounded-xl shadow-md mb-6 relative overflow-hidden group">
+                <div class="relative z-10 flex justify-between items-center">
+                    <div class="flex-1 pr-2">
+                        <div class="flex items-center mb-1">
+                            <i data-lucide="crown" class="w-4 h-4 text-brand-lightOrange mr-1"></i>
+                            <h3 class="font-bold text-sm text-brand-lightOrange uppercase tracking-wide">Hub Pass</h3>
+                        </div>
+                        <p class="text-xs text-gray-300 leading-tight">Reserve high-capacity machines at partner locations. Plan your route, save time.</p>
+                    </div>
+                    <button class="bg-white text-gray-900 text-xs font-bold px-4 py-2 rounded-lg hover:bg-gray-100 shadow-lg whitespace-nowrap">
+                        Buy Pass
+                    </button>
+                </div>
+                <!-- Background decoration -->
+                <div class="absolute -right-4 -top-10 w-24 h-24 bg-brand-lightOrange rounded-full opacity-10 blur-xl group-hover:opacity-20 transition"></div>
+            </div>
+
+            <h3 class="font-bold text-gray-700 mb-3 border-b pb-2 flex justify-between items-end">
+                Available Offers
+                <span class="text-xs font-normal text-gray-500">Sort by: <span class="text-brand-darkBlue font-bold">Highest Pay</span></span>
+            </h3>
+
+            <!-- Offer 1: Favorite Request (High Priority) -->
+            <div class="bg-white border-2 border-brand-lightOrange rounded-xl p-4 shadow-sm mb-4 relative">
+                <div class="absolute top-0 right-0 bg-brand-lightOrange text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg rounded-tr-lg">
+                    FAVORITE REQUEST
+                </div>
+                
+                <div class="flex items-center mb-3 mt-1">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 mr-3 overflow-hidden">
+                        <img src="https://via.placeholder.com/100?text=Cust" alt="Customer" class="object-cover w-full h-full">
+                    </div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-sm">Martha Stewart</p>
+                        <p class="text-xs text-green-600 font-bold flex items-center"><i data-lucide="repeat" class="w-3 h-3 mr-1"></i> Repeat Customer</p>
+                    </div>
+                    <div class="ml-auto text-right">
+                        <span class="block font-black text-xl text-brand-darkBlue">$55.00</span>
+                        <span class="text-[10px] text-gray-400">Est. 45 lbs</span>
+                    </div>
+                </div>
+
+                <div class="bg-gray-50 rounded-lg p-2 mb-3 grid grid-cols-2 gap-2">
+                    <div class="text-xs text-gray-600"><span class="font-bold">Pickup:</span> 1.2mi</div>
+                    <div class="text-xs text-gray-600"><span class="font-bold">Dropoff:</span> 5.0mi</div>
+                </div>
+
+                <button class="w-full bg-brand-darkBlue hover:bg-blue-800 text-white font-bold py-2.5 rounded-lg text-sm transition shadow-md">
+                    Accept Order
+                </button>
+            </div>
+
+            <!-- Offer 2: Standard Open Market -->
+            <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-4 opacity-90">
+                <div class="flex justify-between items-start mb-2">
+                    <div>
+                        <p class="font-bold text-gray-800 text-sm">Open Market Offer</p>
+                        <p class="text-xs text-gray-500">Standard Wash & Fold</p>
+                    </div>
+                    <span class="font-bold text-lg text-gray-700">$32.00</span>
+                </div>
+                <button class="w-full bg-white border-2 border-brand-darkBlue text-brand-darkBlue font-bold py-2 rounded-lg text-sm transition hover:bg-blue-50">
+                    Review Details
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== EARNINGS VIEW (New) ==================== -->
+        <div id="earnings" class="view-section">
+            <h2 class="font-bold text-2xl text-gray-800 mb-4">Earnings</h2>
+
+            <!-- Ad / Upsell Banner -->
+            <div class="bg-brand-lightOrange/10 border border-brand-lightOrange rounded-xl p-4 mb-6 flex items-start space-x-3">
+                <div class="bg-brand-lightOrange text-white rounded-full p-2 mt-1">
+                    <i data-lucide="crown" class="w-4 h-4"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-brand-darkOrange text-sm">Boost Your Efficiency</h3>
+                    <p class="text-xs text-gray-600 mt-1 mb-2">Get the Monthly Hub Pass for priority machine access.</p>
+                    <button class="text-xs bg-brand-darkOrange text-white px-3 py-1.5 rounded font-bold">View Plans</button>
+                </div>
+            </div>
+
+            <!-- Earnings Chart Mockup -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-bold">This Week</p>
+                        <p class="text-3xl font-black text-brand-darkBlue">$482.50</p>
+                    </div>
+                    <select class="text-xs border-none bg-gray-100 rounded px-2 py-1">
+                        <option>Weekly</option>
+                        <option>Daily</option>
+                    </select>
+                </div>
+                <!-- Simple Bar Chart Visualization -->
+                <div class="flex items-end justify-between h-24 space-x-2">
+                    <div class="w-full bg-blue-100 rounded-t hover:bg-brand-lightBlue transition-colors h-[40%]"></div>
+                    <div class="w-full bg-blue-100 rounded-t hover:bg-brand-lightBlue transition-colors h-[60%]"></div>
+                    <div class="w-full bg-blue-100 rounded-t hover:bg-brand-lightBlue transition-colors h-[30%]"></div>
+                    <div class="w-full bg-brand-darkBlue rounded-t shadow-md h-[85%] relative group">
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-black text-white text-[10px] px-1 rounded opacity-0 group-hover:opacity-100 transition">$120</div>
+                    </div>
+                    <div class="w-full bg-blue-100 rounded-t hover:bg-brand-lightBlue transition-colors h-[50%]"></div>
+                    <div class="w-full bg-gray-100 rounded-t h-[10%]"></div>
+                    <div class="w-full bg-gray-100 rounded-t h-[10%]"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-gray-400 mt-2 font-medium">
+                    <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                </div>
+            </div>
+
+            <!-- Referral Section -->
+            <div class="bg-gradient-to-br from-brand-darkBlue to-blue-800 rounded-xl p-5 text-white text-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="font-bold text-lg mb-1">Refer a Pro, Get $50</h3>
+                    <p class="text-xs text-blue-200 mb-4 px-2">Earn when your referral completes 10 orders.</p>
+                    
+                    <div class="bg-white/10 backdrop-blur border border-white/20 rounded-lg p-3 flex items-center justify-between mb-3">
+                        <span class="font-mono font-bold tracking-widest text-sm">LOADPRO24</span>
+                        <button class="text-brand-lightBlue hover:text-white transition"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                    </div>
+                    
+                    <button class="w-full bg-white text-brand-darkBlue font-bold py-2 rounded-lg text-sm shadow-sm">Share Link</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== ACCOUNT VIEW (New) ==================== -->
+        <div id="account" class="view-section">
+            <div class="flex items-center space-x-4 mb-6">
+                <div class="w-20 h-20 rounded-full border-4 border-brand-lightBlue p-1">
+                    <img src="2315.jpg" class="w-full h-full object-cover rounded-full bg-gray-200" onerror="this.src='https://via.placeholder.com/80?text=Pic'">
+                </div>
+                <div>
+                    <h2 class="font-bold text-xl text-gray-800">Offie The Pro</h2>
+                    <div class="flex items-center text-sm text-gray-600 mt-1">
+                        <i data-lucide="star" class="w-4 h-4 text-brand-lightOrange fill-current mr-1"></i>
+                        <span class="font-bold">4.9</span>
+                        <span class="text-gray-400 ml-1">(124 Jobs)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Badges -->
+            <div class="flex space-x-2 mb-6 overflow-x-auto pb-2">
+                <div class="flex-shrink-0 bg-green-50 text-green-700 px-3 py-1.5 rounded-full text-xs font-bold border border-green-200 flex items-center">
+                    <i data-lucide="shield-check" class="w-3 h-3 mr-1"></i> Background Verified
+                </div>
+                <div class="flex-shrink-0 bg-brand-lightOrange/20 text-brand-darkOrange px-3 py-1.5 rounded-full text-xs font-bold border border-brand-lightOrange/30 flex items-center">
+                    <i data-lucide="zap" class="w-3 h-3 mr-1"></i> Top Dropper
+                </div>
+            </div>
+
+            <!-- My Regulars / Favorited By -->
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-800 mb-3 flex items-center justify-between">
+                    Your Regulars
+                    <span class="text-xs font-normal text-gray-500">Customers who favorited you</span>
+                </h3>
+                
+                <div class="space-y-3">
+                    <!-- Regular 1 -->
+                    <div class="bg-white border border-gray-100 rounded-xl p-3 flex items-center shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-sm mr-3">MS</div>
+                        <div class="flex-1">
+                            <p class="font-bold text-sm text-gray-800">Martha Stewart</p>
+                            <p class="text-xs text-gray-500">Last served: 2 days ago</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="block font-bold text-brand-darkBlue text-sm">12</span>
+                            <span class="text-[10px] text-gray-400">Orders</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Regular 2 -->
+                    <div class="bg-white border border-gray-100 rounded-xl p-3 flex items-center shadow-sm">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-brand-darkBlue flex items-center justify-center font-bold text-sm mr-3">JD</div>
+                        <div class="flex-1">
+                            <p class="font-bold text-sm text-gray-800">John Doe</p>
+                            <p class="text-xs text-gray-500">Last served: 1 week ago</p>
+                        </div>
+                        <div class="text-center">
+                            <span class="block font-bold text-brand-darkBlue text-sm">8</span>
+                            <span class="text-[10px] text-gray-400">Orders</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Links -->
+            <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
+                <button class="w-full flex justify-between items-center p-4 text-sm text-gray-700 hover:bg-gray-50">
+                    <span>Account Settings</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                </button>
+                <button class="w-full flex justify-between items-center p-4 text-sm text-gray-700 hover:bg-gray-50">
+                    <span>Payment Methods</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400"></i>
+                </button>
+                <button class="w-full flex justify-between items-center p-4 text-sm text-red-600 hover:bg-red-50">
+                    <span>Log Out</span>
+                </button>
+            </div>
+        </div>
+
+    </div> <!-- End Content Area -->
+
+    <!-- ==================== BOTTOM NAV ==================== -->
+    <nav class="fixed bottom-0 w-full max-w-[414px] bg-white border-t border-gray-200 flex justify-around p-2 pb-6 z-50 shadow-[0_-5px_15px_rgba(0,0,0,0.05)]">
+        <button onclick="switchTab('dashboard')" class="nav-btn flex flex-col items-center text-brand-darkBlue p-2 w-16" id="nav-dashboard">
+            <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+            <span class="text-[10px] font-bold mt-1">Work</span>
+        </button>
+        <button onclick="switchTab('earnings')" class="nav-btn flex flex-col items-center text-gray-400 p-2 w-16 hover:text-brand-lightBlue transition" id="nav-earnings">
+            <i data-lucide="wallet" class="w-6 h-6"></i>
+            <span class="text-[10px] font-medium mt-1">Earnings</span>
+        </button>
+        <button onclick="switchTab('account')" class="nav-btn flex flex-col items-center text-gray-400 p-2 w-16 hover:text-brand-lightBlue transition" id="nav-account">
+            <i data-lucide="user" class="w-6 h-6"></i>
+            <span class="text-[10px] font-medium mt-1">Account</span>
+        </button>
+    </nav>
+
+    <!-- ==================== NEW ORDER MODAL ==================== -->
+    <div id="newOrderModal" class="modal backdrop-blur-sm">
+        <div class="modal-content shadow-2xl border-t-4 border-brand-lightBlue">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce">
+                    <i data-lucide="bell-ring" class="w-8 h-8 text-brand-darkBlue"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-1">New Order Nearby!</h3>
+                <p class="text-sm text-gray-500 mb-6">Pickup: 2.1 miles away • <span class="text-brand-darkOrange font-bold">Priority +$3.00</span></p>
+                
+                <div class="bg-gray-50 p-3 rounded-lg text-left mb-6 border border-gray-100">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-500">Earnings</span>
+                        <span class="font-bold text-gray-800">$18.50</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500">Items</span>
+                        <span class="font-bold text-gray-800">Dry Cleaning (2)</span>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button onclick="closeModal()" class="flex-1 py-3 border border-gray-300 rounded-xl font-bold text-gray-600 text-sm hover:bg-gray-50">Decline</button>
+                    <button onclick="closeModal()" class="flex-1 py-3 bg-brand-darkBlue text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-200 hover:bg-blue-800">Accept</button>
+                </div>
+            </div>
+            <!-- Countdown bar visual -->
+            <div class="h-1.5 bg-gray-100 w-full">
+                <div class="h-full bg-brand-lightBlue w-[70%]"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Initialize Icons
+    lucide.createIcons();
+
+    let currentRole = 'dropper'; // Default
+
+    // Handle Top Role Switcher (Dashboard View Content)
+    function switchRole(roleId) {
+        currentRole = roleId;
+        
+        // Ensure we are on the dashboard tab
+        switchTab('dashboard');
+        
+        // Hide all role-specific views
+        document.getElementById('dropper').classList.remove('active');
+        document.getElementById('loader').classList.remove('active');
+        document.getElementById('fullservice').classList.remove('active');
+        
+        // Show selected role view
+        document.getElementById(roleId).classList.add('active');
+    }
+
+    // Handle Bottom Nav Tabs
+    function switchTab(tabId) {
+        // Reset Nav Colors
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('text-brand-darkBlue');
+            btn.classList.add('text-gray-400');
+            btn.querySelector('span').classList.remove('font-bold');
+            btn.querySelector('span').classList.add('font-medium');
+        });
+
+        // Activate Selected Nav
+        const activeBtn = document.getElementById('nav-' + tabId);
+        activeBtn.classList.remove('text-gray-400');
+        activeBtn.classList.add('text-brand-darkBlue');
+        activeBtn.querySelector('span').classList.remove('font-medium');
+        activeBtn.querySelector('span').classList.add('font-bold');
+
+        // Hide all main content views (Top level logic)
+        // If tab is dashboard, we show the CURRENT ROLE view
+        // If tab is earnings or account, we show those views
+        
+        document.getElementById('dropper').classList.remove('active');
+        document.getElementById('loader').classList.remove('active');
+        document.getElementById('fullservice').classList.remove('active');
+        document.getElementById('earnings').classList.remove('active');
+        document.getElementById('account').classList.remove('active');
+
+        if (tabId === 'dashboard') {
+            document.getElementById(currentRole).classList.add('active');
+        } else {
+            document.getElementById(tabId).classList.add('active');
+        }
+    }
+
+    // Modal Logic
+    function triggerIncomingOrder() {
+        const modal = document.getElementById('newOrderModal');
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('newOrderModal').classList.remove('active');
+    }
+</script>
+</body>
+</html>
