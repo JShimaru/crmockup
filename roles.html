@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Prevent search engines from indexing this recruitment page -->
+    <meta name="robots" content="noindex, nofollow">
+    <title>Join Load Off - Contractor Recruitment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            lightBlue: '#68c0ec',
+                            darkBlue: '#2554ab',
+                            lightOrange: '#fbad1c',
+                            darkOrange: '#f47d20',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #2554ab 0%, #1e3a8a 100%);
+        }
+        .modal-overlay {
+            background-color: rgba(37, 84, 171, 0.9); /* Brand dark blue with opacity */
+            backdrop-filter: blur(5px);
+        }
+        /* Hide scrollbar when modal is open */
+        body.modal-open { overflow: hidden; }
+        .hidden-page { display: none; }
+        
+        /* Checkbox Custom Styling */
+        .custom-checkbox:checked + div {
+            border-color: #2554ab;
+            background-color: #eff6ff;
+        }
+        .custom-checkbox:checked + div .check-icon {
+            opacity: 1;
+        }
+
+        /* Detail Modal Styles */
+        .detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 200;
+            overflow-y: auto;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .detail-modal.active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-800 antialiased modal-open">
+
+    <!-- ==================== QUICK INTEREST POP-UP (MODAL) ==================== -->
+    <div id="quickInterestModal" class="fixed inset-0 z-[100] modal-overlay flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full relative overflow-hidden transform transition-all scale-100">
+            <!-- Decorative Header -->
+            <div class="bg-brand-darkBlue p-6 text-center relative">
+                <button onclick="closeModal('quickInterestModal')" class="absolute top-4 right-4 text-white/70 hover:text-white transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-white/10 rounded-full mb-3 backdrop-blur-sm">
+                    <i data-lucide="zap" class="w-6 h-6 text-brand-lightOrange"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white">Interested in Earning?</h2>
+                <p class="text-blue-100 text-sm mt-1">Beta Testing Starts April 2026</p>
+            </div>
+
+            <div class="p-8">
+                <p class="text-gray-600 text-sm mb-6 text-center">
+                    Skip the reading. Drop your info below and we'll <strong>text you the direct link</strong> to the full application so you can apply when you're ready.
+                </p>
+
+                <!-- 
+                     NOTE FOR DEVELOPER: 
+                     This form uses FormSubmit.co for demo purposes. 
+                     For production, replace 'action' with your specific Google Sheets/Zapier webhook URL.
+                -->
+                <form action="https://formsubmit.co/loadoffad@load-off.com" method="POST" onsubmit="handleQuickSubmit(event)">
+                    <input type="hidden" name="_subject" value="New Quick Interest Submission">
+                    <input type="hidden" name="_captcha" value="false">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <input type="text" name="name" placeholder="First Name" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
+                        </div>
+                        <div>
+                            <input type="tel" name="phone" placeholder="Mobile Number" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
+                        </div>
+                        <div>
+                            <input type="text" name="zip" placeholder="Zip Code" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="w-full mt-6 bg-brand-darkOrange hover:bg-orange-600 text-white font-bold py-3.5 rounded-lg transition shadow-lg flex justify-center items-center">
+                        <i data-lucide="message-square" class="w-4 h-4 mr-2"></i> Text Me The Application
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center">
+                    <button onclick="closeModal('quickInterestModal')" class="text-sm text-gray-400 hover:text-brand-darkBlue underline transition">
+                        No thanks, I'd like to read more about the roles first.
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== LANDING PAGE CONTENT ==================== -->
+    <div id="landingPageContent">
+        <!-- Header -->
+        <header class="bg-white shadow-sm sticky top-0 z-40 border-b border-gray-100">
+            <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+                <div class="flex items-center space-x-2 text-brand-darkBlue">
+                    <!-- Logo Simulation -->
+                    <span class="font-black text-2xl tracking-tighter">Load <span class="text-brand-lightBlue">Off</span></span>
+                </div>
+                <!-- Hidden from regular nav, only "Apply" available -->
+                <button onclick="scrollToApp()" class="bg-brand-darkBlue text-white px-5 py-2 rounded-lg font-bold hover:bg-blue-800 transition shadow-md text-sm">
+                    Apply Now
+                </button>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <section class="gradient-bg text-white py-20 px-4 text-center relative overflow-hidden">
+            <!-- Background decoration -->
+            <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                <i data-lucide="waves" class="w-96 h-96 absolute -top-20 -left-20"></i>
+                <i data-lucide="waves" class="w-96 h-96 absolute -bottom-20 -right-20"></i>
+            </div>
+
+            <div class="max-w-4xl mx-auto relative z-10">
+                <span class="bg-brand-lightOrange text-white px-4 py-1.5 rounded-full text-sm font-bold tracking-wide uppercase mb-6 inline-block shadow-lg">Partner Recruitment</span>
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight tracking-tight">Turn Laundry into <br/> <span class="text-brand-lightBlue">Serious Income.</span></h1>
+                <p class="text-lg md:text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+                    Join the Load Off contractor network. Choose the role that fits your lifestyle, from driving to hub management to running your own business.
+                </p>
+                <div class="flex justify-center">
+                    <button onclick="scrollToRoles()" class="bg-white text-brand-darkBlue font-bold py-3.5 px-8 rounded-full shadow-xl hover:bg-gray-50 transition text-lg flex items-center">
+                        Explore Roles <i data-lucide="arrow-down" class="ml-2 w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Role Summary -->
+        <section id="roles" class="py-20 px-4 max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-900">Choose Your Path</h2>
+                <p class="text-gray-600 mt-3 text-lg">Three ways to earn. One powerful platform.</p>
+            </div>
+            
+            <div class="grid lg:grid-cols-3 gap-8">
+                
+                <!-- Dropper Card -->
+                <div class="bg-white rounded-2xl shadow-lg border-t-4 border-brand-lightBlue overflow-hidden flex flex-col hover:-translate-y-1 transition duration-300">
+                    <div class="p-6 pb-0 flex-1">
+                        <div class="w-14 h-14 bg-blue-50 text-brand-lightBlue rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="truck" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-1 text-gray-800">The Dropper</h3>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-4">Logistics Specialist</p>
+                        <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                            The engine of our network. Exclusive handling of priority dry cleaning and customer orders.
+                        </p>
+                        <button onclick="openModal('dropperModal')" class="text-brand-darkBlue font-bold text-sm hover:underline flex items-center mb-4">
+                            View Full Role Details <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-auto bg-gray-50 p-6 border-t border-gray-100">
+                        <div class="mb-4">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-1">Est. Earnings</p>
+                            <p class="text-xl font-bold text-brand-darkBlue">$25 - $35 <span class="text-sm font-normal text-gray-500">/ hr</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loader Card -->
+                <div class="bg-white rounded-2xl shadow-lg border-t-4 border-brand-darkBlue overflow-hidden flex flex-col hover:-translate-y-1 transition duration-300">
+                    <div class="p-6 pb-0 flex-1">
+                        <div class="w-14 h-14 bg-indigo-50 text-brand-darkBlue rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="shirt" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-1 text-gray-800">The Loader</h3>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-4">Hub Specialist</p>
+                        <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                            The quality control expert. Dedicated shifts at Partner Laundromats. Guaranteed hourly rates with performance upside.
+                        </p>
+                        <button onclick="openModal('loaderModal')" class="text-brand-darkBlue font-bold text-sm hover:underline flex items-center mb-4">
+                            View Full Role Details <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-auto bg-gray-50 p-6 border-t border-gray-100">
+                        <div class="mb-4">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-1">Guaranteed Min</p>
+                            <p class="text-xl font-bold text-brand-darkBlue">$20.00 <span class="text-sm font-normal text-gray-500">/ hr</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Service Card -->
+                <div class="bg-white rounded-2xl shadow-lg border-t-4 border-brand-lightOrange overflow-hidden flex flex-col hover:-translate-y-1 transition duration-300">
+                    <div class="p-6 pb-0 flex-1">
+                        <div class="w-14 h-14 bg-orange-50 text-brand-lightOrange rounded-xl flex items-center justify-center mb-4">
+                            <i data-lucide="briefcase" class="w-7 h-7"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-1 text-gray-800">Full Service</h3>
+                        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-4">The Entrepreneur</p>
+                        <p class="text-gray-600 text-sm mb-6 leading-relaxed">
+                            Business-in-a-box. Manage end-to-end orders. No onboarding for established pros.
+                        </p>
+                        <button onclick="openModal('fullServiceModal')" class="text-brand-darkBlue font-bold text-sm hover:underline flex items-center mb-4">
+                            View Full Role Details <i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-auto bg-gray-50 p-6 border-t border-gray-100">
+                        <div class="mb-4">
+                            <p class="text-xs font-bold text-gray-400 uppercase mb-1">Potential Earnings</p>
+                            <p class="text-xl font-bold text-brand-darkBlue">$40 - $60+ <span class="text-sm font-normal text-gray-500">/ hr</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom CTA -->
+            <div class="text-center mt-16">
+                <p class="text-gray-600 mb-6 max-w-2xl mx-auto">Ready to get started? Our application takes less than 5 minutes. Select all the roles you are interested in.</p>
+                <button onclick="scrollToApp()" class="bg-brand-darkBlue text-white font-bold py-4 px-12 rounded-full shadow-xl hover:bg-blue-800 transition text-xl transform hover:scale-105 duration-200">
+                    Start Full Application
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 text-gray-400 py-10 text-center text-sm border-t border-gray-800">
+            <div class="flex justify-center items-center space-x-2 text-white mb-4">
+                <span class="font-black text-xl tracking-tighter">Load <span class="text-brand-lightBlue">Off</span></span>
+            </div>
+            <p class="mb-2">&copy; 2026 Load Off Technologies. All rights reserved.</p>
+            <p class="text-gray-600">Confidential: Recruitment Landing Page</p>
+        </footer>
+    </div>
+
+    <!-- ==================== ROLE DETAIL MODALS ==================== -->
+    
+    <!-- Dropper Details -->
+    <div id="dropperModal" class="detail-modal" onclick="closeModal('dropperModal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative" onclick="event.stopPropagation()">
+            <button onclick="closeModal('dropperModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-50 text-brand-lightBlue rounded-xl flex items-center justify-center mr-4">
+                    <i data-lucide="truck" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Dropper Details</h3>
+            </div>
+            
+            <div class="space-y-4 text-sm text-gray-600 overflow-y-auto max-h-[60vh] pr-2">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <h4 class="font-bold text-brand-darkBlue mb-2">Exclusive Access</h4>
+                    <p>Droppers are the only role authorized to transport <strong>Dry Cleaning</strong> orders. (Full-Service contractors in "Dropper Mode" are limited to Wash & Fold and Airbnb transport only).</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-2">Onboarding & Expectations</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Mandatory training on pickup/drop-off procedures.</li>
+                        <li>Deactivation dispute protocols included in orientation.</li>
+                        <li>Must maintain high acceptance rate for priority orders.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-2">Profile Requirements</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Valid Driver's License & Vehicle Insurance.</li>
+                        <li>Vehicle Make, Model, and Year verification.</li>
+                        <li><strong>Location Data:</strong> Must provide active GPS location during shifts for routing.</li>
+                    </ul>
+                </div>
+            </div>
+            <button onclick="closeModal('dropperModal'); scrollToApp()" class="w-full mt-6 bg-brand-darkBlue text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition">Apply for Dropper Role</button>
+        </div>
+    </div>
+
+    <!-- Loader Details -->
+    <div id="loaderModal" class="detail-modal" onclick="closeModal('loaderModal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative" onclick="event.stopPropagation()">
+            <button onclick="closeModal('loaderModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-indigo-50 text-brand-darkBlue rounded-xl flex items-center justify-center mr-4">
+                    <i data-lucide="shirt" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Loader Details</h3>
+            </div>
+            
+            <div class="space-y-4 text-sm text-gray-600 overflow-y-auto max-h-[60vh] pr-2">
+                <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                    <h4 class="font-bold text-brand-darkBlue mb-2">Compensation</h4>
+                    <p>Guaranteed Hourly Minimum (No Overtime) <strong>OR</strong> Per-Pound Performance Payout—whichever is higher for that shift.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-2">Role Tiers & Profile</h4>
+                    <p class="mb-2">Your profile will display your certification level based on onboarding performance:</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Certified Clean & Fold:</strong> Exceptional adherence to standards.</li>
+                        <li><strong>Standard Loader:</strong> Meets all Load Off requirements.</li>
+                        <li><strong>Personal Style:</strong> For contractors with unique methods or those needing improvement on specific standards.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-2">Shift Requirements</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Location Tracking:</strong> Must remain on-site during shift.</li>
+                        <li><strong>Photo Verification:</strong> Submit photos of order location/stage for payment release.</li>
+                        <li><strong>Perks:</strong> Access to partner location Restrooms and WiFi.</li>
+                    </ul>
+                </div>
+            </div>
+            <button onclick="closeModal('loaderModal'); scrollToApp()" class="w-full mt-6 bg-brand-darkBlue text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition">Apply for Loader Role</button>
+        </div>
+    </div>
+
+    <!-- Full Service Details -->
+    <div id="fullServiceModal" class="detail-modal" onclick="closeModal('fullServiceModal')">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-8 relative" onclick="event.stopPropagation()">
+            <button onclick="closeModal('fullServiceModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-700">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-orange-50 text-brand-lightOrange rounded-xl flex items-center justify-center mr-4">
+                    <i data-lucide="briefcase" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">Full Service Details</h3>
+            </div>
+            
+            <div class="space-y-4 text-sm text-gray-600 overflow-y-auto max-h-[60vh] pr-2">
+                <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                    <h4 class="font-bold text-brand-darkOrange mb-2">No Onboarding Required</h4>
+                    <p>Designed for established pros. You must have existing transportation and washing capabilities.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-2">Resources & Liability</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Hub Pass ($100/mo):</strong> Optional access to commercial machines in our network.</li>
+                        <li><strong>Liability:</strong> Any damage or quality issues occurring outside of Hub Pass locations are the contractor's <strong>personal liability</strong>.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-gray-800 mb-2">Service Standards</h4>
+                    <p>Exceptional Customer Service is Priority #1. Failure to meet Load Off quality metrics may result in removal from the platform.</p>
+                </div>
+            </div>
+            <button onclick="closeModal('fullServiceModal'); scrollToApp()" class="w-full mt-6 bg-brand-darkBlue text-white font-bold py-3 rounded-xl hover:bg-blue-800 transition">Apply for Full Service</button>
+        </div>
+    </div>
+
+    <!-- ==================== HIDDEN FULL APPLICATION PAGE ==================== -->
+    <div id="fullApplicationPage" class="hidden-page min-h-screen bg-gray-50">
+        <div class="max-w-3xl mx-auto px-4 py-12">
+            
+            <!-- Back Button -->
+            <button onclick="showLanding()" class="mb-8 flex items-center text-gray-500 hover:text-brand-darkBlue font-medium transition">
+                <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Back to Role Details
+            </button>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+                <div class="bg-brand-darkBlue p-8 text-white">
+                    <h1 class="text-3xl font-bold">Partner Application</h1>
+                    <p class="text-blue-200 mt-2">Complete your profile for the April 2026 Beta Launch.</p>
+                </div>
+
+                <!-- 
+                     NOTE FOR DEVELOPER: 
+                     Replace 'action' with your Google Sheets webhook or backend endpoint.
+                     Currently pointing to FormSubmit.co for demonstration of email capability.
+                -->
+                <form class="p-8" action="https://formsubmit.co/loadoffad@load-off.com" method="POST">
+                    <input type="hidden" name="_subject" value="New Full Partner Application">
+                    <input type="hidden" name="_next" value="https://load-off.com/thank-you"> <!-- Optional: Redirect after submit -->
+
+                    <!-- Evaluation Note -->
+                    <div class="bg-blue-50 border-l-4 border-brand-lightBlue p-4 mb-8 text-sm text-gray-700">
+                        <p class="font-bold text-brand-darkBlue mb-1">Full Service Eligibility Note:</p>
+                        <p>All applicants are evaluated for the <strong>Full Service</strong> role based on their ability to fulfill Dropper logistics, Loader quality standards, or prior verified industry experience.</p>
+                    </div>
+                    
+                    <!-- Personal Info -->
+                    <h3 class="text-gray-800 font-bold text-lg mb-4 border-b pb-2">1. Personal Details</h3>
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">First Name</label>
+                            <input type="text" name="firstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
+                            <input type="text" name="lastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                        <input type="email" name="email" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" name="phone" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Home Zip Code</label>
+                            <input type="text" name="zip" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Role Selection (Checkboxes) -->
+                    <h3 class="text-gray-800 font-bold text-lg mb-4 border-b pb-2">2. Role Interest</h3>
+                    <p class="text-sm text-gray-500 mb-4">Select all roles you would like to be considered for.</p>
+                    
+                    <div class="space-y-3 mb-8">
+                        <!-- Checkbox 1 -->
+                        <label class="relative cursor-pointer block group">
+                            <input type="checkbox" name="roles[]" class="sr-only custom-checkbox" value="dropper">
+                            <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-brand-lightBlue transition flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-4 text-brand-lightBlue">
+                                        <i data-lucide="truck" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block font-bold text-gray-800">Dropper</span>
+                                        <span class="block text-xs text-gray-500">Logistics & Delivery</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="check-circle" class="check-icon w-6 h-6 text-brand-darkBlue opacity-0 transition-opacity"></i>
+                            </div>
+                        </label>
+
+                        <!-- Checkbox 2 -->
+                        <label class="relative cursor-pointer block group">
+                            <input type="checkbox" name="roles[]" class="sr-only custom-checkbox" value="loader">
+                            <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-brand-darkBlue transition flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mr-4 text-brand-darkBlue">
+                                        <i data-lucide="shirt" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block font-bold text-gray-800">Loader</span>
+                                        <span class="block text-xs text-gray-500">Hub Processing & Folding</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="check-circle" class="check-icon w-6 h-6 text-brand-darkBlue opacity-0 transition-opacity"></i>
+                            </div>
+                        </label>
+
+                        <!-- Checkbox 3 -->
+                        <label class="relative cursor-pointer block group">
+                            <input type="checkbox" name="roles[]" class="sr-only custom-checkbox" value="fullservice">
+                            <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-brand-lightOrange transition flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center mr-4 text-brand-lightOrange">
+                                        <i data-lucide="briefcase" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <span class="block font-bold text-gray-800">Full Service</span>
+                                        <span class="block text-xs text-gray-500">End-to-End Business</span>
+                                    </div>
+                                </div>
+                                <i data-lucide="check-circle" class="check-icon w-6 h-6 text-brand-darkBlue opacity-0 transition-opacity"></i>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Terms -->
+                    <div class="mb-8">
+                        <label class="flex items-start">
+                            <input type="checkbox" required class="mt-1 w-4 h-4 text-brand-darkBlue border-gray-300 rounded focus:ring-brand-darkBlue">
+                            <span class="ml-3 text-sm text-gray-600">
+                                I verify that I am at least 18 years of age, have a valid government ID, and consent to a background check if selected for the program.
+                            </span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-brand-darkBlue hover:bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg transition text-lg">
+                        Submit Application
+                    </button>
+
+                </form>
+            </div>
+            
+            <p class="text-center text-gray-400 text-xs mt-6">
+                Protected by Load Off Secure Recruiting. Your data is not shared with third parties.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // Generic Modal Logic
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            
+            // Special handling for the Interest modal which has extra animations
+            if(modalId === 'quickInterestModal') {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                document.body.classList.remove('modal-open');
+                setTimeout(() => { modal.style.display = 'none'; }, 300);
+            }
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Handle Quick Form Submit
+        function handleQuickSubmit(e) {
+            // Note: FormSubmit.co handles the actual submission if action is set.
+            // If you want to prevent default for demo purposes:
+            // e.preventDefault();
+            
+            alert("Thanks! We've sent a text to your number with the direct link to the Full Application.");
+            
+            // Redirect to Application Page directly
+            closeModal('quickInterestModal');
+            scrollToApp();
+        }
+
+        // Navigation Logic
+        function scrollToRoles() {
+            document.getElementById('roles').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function scrollToApp() {
+            document.getElementById('landingPageContent').classList.add('hidden-page');
+            document.getElementById('fullApplicationPage').classList.remove('hidden-page');
+            window.scrollTo(0,0);
+        }
+
+        function showLanding() {
+            document.getElementById('fullApplicationPage').classList.add('hidden-page');
+            document.getElementById('landingPageContent').classList.remove('hidden-page');
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
