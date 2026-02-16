@@ -63,6 +63,21 @@
         .detail-modal.active {
             display: flex;
         }
+        
+        /* Loading Spinner */
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid #2554ab;
+            width: 20px;
+            height: 20px;
+            -webkit-animation: spin 1s linear infinite; /* Safari */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-800 antialiased modal-open">
@@ -87,29 +102,23 @@
                     Skip the reading. Drop your info below and we'll <strong>text you the direct link</strong> to the full application so you can apply when you're ready.
                 </p>
 
-                <!-- 
-                     NOTE FOR DEVELOPER: 
-                     This form uses FormSubmit.co for demo purposes. 
-                     For production, replace 'action' with your specific Google Sheets/Zapier webhook URL.
-                -->
-                <form action="https://formsubmit.co/loadoffad@load-off.com" method="POST" onsubmit="handleQuickSubmit(event)">
-                    <input type="hidden" name="_subject" value="New Quick Interest Submission">
-                    <input type="hidden" name="_captcha" value="false">
-                    
+                <form id="quickForm" name="quickForm" onsubmit="submitToGoogleSheet(event, 'quickForm')">
+                    <input type="hidden" name="Form Type" value="Quick Interest">
                     <div class="space-y-4">
                         <div>
-                            <input type="text" name="name" placeholder="First Name" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
+                            <input type="text" name="Name" placeholder="First Name" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
                         </div>
                         <div>
-                            <input type="tel" name="phone" placeholder="Mobile Number" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
+                            <input type="tel" name="Phone" placeholder="Mobile Number" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
                         </div>
                         <div>
-                            <input type="text" name="zip" placeholder="Zip Code" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
+                            <input type="text" name="Zip" placeholder="Zip Code" required class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:border-brand-lightBlue focus:ring-1 focus:ring-brand-lightBlue transition">
                         </div>
                     </div>
                     
-                    <button type="submit" class="w-full mt-6 bg-brand-darkOrange hover:bg-orange-600 text-white font-bold py-3.5 rounded-lg transition shadow-lg flex justify-center items-center">
-                        <i data-lucide="message-square" class="w-4 h-4 mr-2"></i> Text Me The Application
+                    <button type="submit" class="w-full mt-6 bg-brand-darkOrange hover:bg-orange-600 text-white font-bold py-3.5 rounded-lg transition shadow-lg flex justify-center items-center relative">
+                        <span class="btn-text flex items-center"><i data-lucide="message-square" class="w-4 h-4 mr-2"></i> Text Me The Application</span>
+                        <div class="btn-loader hidden absolute"><div class="loader"></div></div>
                     </button>
                 </form>
 
@@ -397,15 +406,9 @@
                     <p class="text-blue-200 mt-2">Complete your profile for the April 2026 Beta Launch.</p>
                 </div>
 
-                <!-- 
-                     NOTE FOR DEVELOPER: 
-                     Replace 'action' with your Google Sheets webhook or backend endpoint.
-                     Currently pointing to FormSubmit.co for demonstration of email capability.
-                -->
-                <form class="p-8" action="https://formsubmit.co/loadoffad@load-off.com" method="POST">
-                    <input type="hidden" name="_subject" value="New Full Partner Application">
-                    <input type="hidden" name="_next" value="https://load-off.com/thank-you"> <!-- Optional: Redirect after submit -->
-
+                <form id="fullAppForm" name="fullAppForm" class="p-8" onsubmit="submitToGoogleSheet(event, 'fullAppForm')">
+                    <input type="hidden" name="Form Type" value="Full Application">
+                    
                     <!-- Evaluation Note -->
                     <div class="bg-blue-50 border-l-4 border-brand-lightBlue p-4 mb-8 text-sm text-gray-700">
                         <p class="font-bold text-brand-darkBlue mb-1">Full Service Eligibility Note:</p>
@@ -417,25 +420,25 @@
                     <div class="grid grid-cols-2 gap-6 mb-6">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">First Name</label>
-                            <input type="text" name="firstName" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                            <input type="text" name="Name" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Last Name</label>
-                            <input type="text" name="lastName" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                            <input type="text" name="Last Name" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
                         </div>
                     </div>
                     <div class="mb-6">
                         <label class="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
-                        <input type="email" name="email" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                        <input type="email" name="Email" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
                     </div>
                     <div class="grid grid-cols-2 gap-6 mb-8">
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
-                            <input type="tel" name="phone" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                            <input type="tel" name="Phone" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
                         </div>
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Home Zip Code</label>
-                            <input type="text" name="zip" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
+                            <input type="text" name="Zip" required class="w-full p-3 border border-gray-300 rounded-lg focus:border-brand-darkBlue focus:ring-1 focus:ring-brand-darkBlue outline-none">
                         </div>
                     </div>
 
@@ -446,7 +449,7 @@
                     <div class="space-y-3 mb-8">
                         <!-- Checkbox 1 -->
                         <label class="relative cursor-pointer block group">
-                            <input type="checkbox" name="roles[]" class="sr-only custom-checkbox" value="dropper">
+                            <input type="checkbox" name="Roles" class="sr-only custom-checkbox" value="Dropper">
                             <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-brand-lightBlue transition flex items-center justify-between">
                                 <div class="flex items-center">
                                     <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center mr-4 text-brand-lightBlue">
@@ -463,7 +466,7 @@
 
                         <!-- Checkbox 2 -->
                         <label class="relative cursor-pointer block group">
-                            <input type="checkbox" name="roles[]" class="sr-only custom-checkbox" value="loader">
+                            <input type="checkbox" name="Roles" class="sr-only custom-checkbox" value="Loader">
                             <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-brand-darkBlue transition flex items-center justify-between">
                                 <div class="flex items-center">
                                     <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mr-4 text-brand-darkBlue">
@@ -480,7 +483,7 @@
 
                         <!-- Checkbox 3 -->
                         <label class="relative cursor-pointer block group">
-                            <input type="checkbox" name="roles[]" class="sr-only custom-checkbox" value="fullservice">
+                            <input type="checkbox" name="Roles" class="sr-only custom-checkbox" value="Full Service">
                             <div class="p-4 border-2 border-gray-200 rounded-xl hover:border-brand-lightOrange transition flex items-center justify-between">
                                 <div class="flex items-center">
                                     <div class="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center mr-4 text-brand-lightOrange">
@@ -506,8 +509,9 @@
                         </label>
                     </div>
 
-                    <button type="submit" class="w-full bg-brand-darkBlue hover:bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg transition text-lg">
-                        Submit Application
+                    <button type="submit" class="w-full bg-brand-darkBlue hover:bg-blue-900 text-white font-bold py-4 rounded-xl shadow-lg transition text-lg relative">
+                        <span class="btn-text">Submit Application</span>
+                        <div class="btn-loader hidden absolute inset-0 flex items-center justify-center"><div class="loader"></div></div>
                     </button>
 
                 </form>
@@ -522,12 +526,66 @@
     <script>
         lucide.createIcons();
 
+        // >>> REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL <<<
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzQ7Jt8Make-JovrU42e4ncKlu2hJA-fHRDwS-F8gtCzXeeBSMa8BfAx1nCoMt_taD6/exec';
+
+        function submitToGoogleSheet(e, formId) {
+            e.preventDefault();
+            const form = document.getElementById(formId);
+            const btn = form.querySelector('button[type="submit"]');
+            const btnText = btn.querySelector('.btn-text');
+            const btnLoader = btn.querySelector('.btn-loader');
+            
+            // Show Loading
+            btnText.classList.add('opacity-0');
+            btnLoader.classList.remove('hidden');
+
+            // Handle Checkboxes correctly for multiple roles
+            const formData = new FormData(form);
+            const data = new URLSearchParams();
+            
+            // Special handling to join roles with commas
+            const roles = [];
+            for (const pair of formData) {
+                if (pair[0] === 'Roles') {
+                    roles.push(pair[1]);
+                } else {
+                    data.append(pair[0], pair[1]);
+                }
+            }
+            if (roles.length > 0) data.append('Roles', roles.join(', '));
+
+            fetch(scriptURL, { method: 'POST', body: data })
+                .then(response => {
+                    // Reset Loading
+                    btnText.classList.remove('opacity-0');
+                    btnLoader.classList.add('hidden');
+                    
+                    // Success Handling based on form type
+                    if (formId === 'quickForm') {
+                        alert("Thanks! We've sent a text to your number with the direct link to the Full Application.");
+                        closeModal('quickInterestModal');
+                        scrollToApp();
+                        form.reset();
+                    } else {
+                        alert('Application Submitted Successfully! We will contact you for background check initiation.');
+                        form.reset();
+                        window.location.href = "#"; // Redirect if needed
+                    }
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert('There was an issue submitting your form. Please try again.');
+                    btnText.classList.remove('opacity-0');
+                    btnLoader.classList.add('hidden');
+                });
+        }
+
         // Generic Modal Logic
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.classList.remove('active');
             
-            // Special handling for the Interest modal which has extra animations
             if(modalId === 'quickInterestModal') {
                 modal.classList.add('opacity-0', 'pointer-events-none');
                 document.body.classList.remove('modal-open');
@@ -537,19 +595,6 @@
 
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
-        }
-
-        // Handle Quick Form Submit
-        function handleQuickSubmit(e) {
-            // Note: FormSubmit.co handles the actual submission if action is set.
-            // If you want to prevent default for demo purposes:
-            // e.preventDefault();
-            
-            alert("Thanks! We've sent a text to your number with the direct link to the Full Application.");
-            
-            // Redirect to Application Page directly
-            closeModal('quickInterestModal');
-            scrollToApp();
         }
 
         // Navigation Logic
