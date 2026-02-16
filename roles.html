@@ -527,6 +527,7 @@
         lucide.createIcons();
 
         // >>> REPLACE THIS WITH YOUR GOOGLE APPS SCRIPT WEB APP URL <<<
+        // >>> REPLACE THIS WITH YOUR NEW GOOGLE APPS SCRIPT WEB APP URL <<<
         const scriptURL = 'https://script.google.com/macros/s/AKfycbzQ7Jt8Make-JovrU42e4ncKlu2hJA-fHRDwS-F8gtCzXeeBSMa8BfAx1nCoMt_taD6/exec';
 
         function submitToGoogleSheet(e, formId) {
@@ -540,7 +541,6 @@
             btnText.classList.add('opacity-0');
             btnLoader.classList.remove('hidden');
 
-            // Handle Checkboxes correctly for multiple roles
             const formData = new FormData(form);
             const data = new URLSearchParams();
             
@@ -555,13 +555,13 @@
             }
             if (roles.length > 0) data.append('Roles', roles.join(', '));
 
-            fetch(scriptURL, { method: 'POST', body: data })
+            // CHANGED: Added mode: 'no-cors' to prevent browser blocks
+            fetch(scriptURL, { method: 'POST', body: data, mode: 'no-cors' })
                 .then(response => {
-                    // Reset Loading
+                    // With no-cors, we can't check response.ok, so we assume success if no network error
                     btnText.classList.remove('opacity-0');
                     btnLoader.classList.add('hidden');
                     
-                    // Success Handling based on form type
                     if (formId === 'quickForm') {
                         alert("Thanks! We've sent a text to your number with the direct link to the Full Application.");
                         closeModal('quickInterestModal');
@@ -570,7 +570,7 @@
                     } else {
                         alert('Application Submitted Successfully! We will contact you for background check initiation.');
                         form.reset();
-                        window.location.href = "#"; // Redirect if needed
+                        window.location.href = "#"; 
                     }
                 })
                 .catch(error => {
